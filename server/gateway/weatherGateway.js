@@ -2,6 +2,8 @@ const axios = require('axios')
 const cron = require('node-cron')
 const db = require('../database')
 const dotEnv = require('dotenv')
+const logger = require('../config/winston')
+const { apiUrl } = require('../helper/constants')
 let endDate = 0
 dotEnv.config()
 
@@ -11,12 +13,11 @@ dotEnv.config()
  */
 
 const getWeatherData = async city => {
-  const url = `http://api.openweathermap.org/data/2.5/forecast?id=${city}&appid=${process.env.API_KEY}&units=${process.env.TEMP_UNIT}`
   try {
-    const response = await axios.get(url)
+    const response = await axios.get(apiUrl(city))
     return response
   } catch (error) {
-    console.error(error)
+    logger.error('weather api call\r\n' + error)
   }
 }
 
@@ -33,14 +34,16 @@ module.exports = () => {
             lat: response.data.city.coord.lat,
             long: response.data.city.coord.lon,
             id: response.data.city.id,
-            time: data.dt,
+            timeStamp: Number(data.dt + '000'),
+            timeInHour: new Date(Number(data.dt + '000')).getUTCHours(),
             dateString: data.dt_txt,
             temp: data.main.temp
           }
+          console.log(result)
           db.weatherData.insert(result)
         }
       })
-      endDate = response.data.list[response.data.list.length].dt
+      endDate = response.data.list[(response.data.list.length) - 1].dt
     })
   })
 }
