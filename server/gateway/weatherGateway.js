@@ -5,6 +5,7 @@ const dotEnv = require('dotenv')
 const logger = require('../config/winston')
 const { apiUrl } = require('../helper/constants')
 let endDate = 0
+let temp = 0
 dotEnv.config()
 
 /**
@@ -24,10 +25,10 @@ const getWeatherData = async city => {
 module.exports = () => {
   cron.schedule('0 0 0 * * *', () => {
     const cities = JSON.parse(process.env.CITY)
-    cities.forEach(async city => {
+    cities.forEach(async (city, i) => {
       let result = {}
       const response = await getWeatherData(city)
-      response.data.list.forEach((data, i) => {
+      response.data.list.forEach((data) => {
         if (data.dt > endDate) {
           result = {
             name: response.data.city.name,
@@ -39,11 +40,11 @@ module.exports = () => {
             dateString: data.dt_txt,
             temp: data.main.temp
           }
-          console.log(result)
           db.weatherData.insert(result)
         }
       })
-      endDate = response.data.list[(response.data.list.length) - 1].dt
+      if (i === (cities.length) - 1) temp = response.data.list[(response.data.list.length) - 1].dt
     })
+    endDate = temp
   })
 }
