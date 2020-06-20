@@ -11,11 +11,11 @@ const checkTempRange = async (req, res) => {
   const location = req.params.location
   const low = Number(req.params.low)
   const high = Number(req.params.high)
-  const time = Number(req.params.time)
+  const timeStamp = Number(req.params.timeStamp)
   try {
     const result = await find({
       name: location,
-      time,
+      timeStamp,
       $or: [{ temp: { $lt: Number(low) } }, { temp: { $gt: Number(high) } }]
     })
     res
@@ -43,12 +43,11 @@ const checkTempRange = async (req, res) => {
 const getLocation = async (req, res) => {
   const low = Number(req.params.low)
   const high = Number(req.params.high)
-  const startTime = Number(req.params.startTime)
-  const endTime = Number(req.params.endTime)
+  const timeInHour = Number(req.params.timeInHour)
 
   try {
     const result = await find({
-      $and: [{ time: { $gte: startTime } }, { time: { $lte: endTime } }],
+      timeInHour,
       $or: [{ temp: { $lt: low } }, { temp: { $gt: high } }]
     })
     res
