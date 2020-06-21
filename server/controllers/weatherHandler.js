@@ -1,5 +1,6 @@
 const db = require('../database')
 const util = require('util')
+const logger = require('../config/winston')
 const { successMsg, errorMsg } = require('../helper/constants')
 
 // promisify mongodb find query
@@ -10,12 +11,11 @@ const checkTempRange = async (req, res) => {
   const location = req.params.location
   const low = Number(req.params.low)
   const high = Number(req.params.high)
-  const startTime = Number(req.params.startTime)
-  const endTime = Number(req.params.endTime)
+  const time = Number(req.params.time)
   try {
     const result = await find({
       name: location,
-      $and: [{ time: { $gte: startTime } }, { time: { $lte: endTime } }],
+      time,
       $or: [{ temp: { $lt: Number(low) } }, { temp: { $gt: Number(high) } }]
     })
     res
@@ -27,7 +27,7 @@ const checkTempRange = async (req, res) => {
         error: null
       })
   } catch (error) {
-    console.log(error)
+    logger.error(req.originalUrl + ' ' + error)
     res
       .status(500)
       .json({
@@ -60,7 +60,7 @@ const getLocation = async (req, res) => {
         error: null
       })
   } catch (error) {
-    console.log(error)
+    logger.error(req.originalUrl + ' ' + error)
     res
       .status(500)
       .json({
@@ -90,7 +90,7 @@ const getTime = async (req, res) => {
         error: null
       })
   } catch (error) {
-    console.log(error)
+    logger.error(req.originalUrl + ' ' + error)
     res
       .status(500)
       .json({
