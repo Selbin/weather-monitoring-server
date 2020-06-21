@@ -2,12 +2,16 @@ const express = require('express')
 const dotEnv = require('dotenv')
 const indexRoutes = require('./routes/indexRoutes')
 const cronJob = require('./gateway/weatherGateway')
+const winston = require('./config/winston')
+const morgan = require('morgan')
 
 dotEnv.config()
 
-cronJob()
-
 const app = express()
+
+app.use(morgan('combined', { stream: winston.stream }))
+
+cronJob()
 
 app.use('/weather', indexRoutes)
 
