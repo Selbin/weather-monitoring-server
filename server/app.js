@@ -2,14 +2,14 @@ const express = require('express')
 const cron = require('node-cron')
 const axios = require('axios')
 const dotEnv = require('dotenv')
-
+const db = require('./model/store')
 dotEnv.config()
 
+const app = express()
 const cities = JSON.parse(process.env.CITY)
 
 const downloadData = async city => {
   const url = `http://api.openweathermap.org/data/2.5/forecast?id=${city}&appid=${process.env.API_KEY}`
-  console.log(url)
   try {
     const response = await axios.get(url)
     return response
@@ -17,10 +17,9 @@ const downloadData = async city => {
     console.error(error)
   }
 }
-const combined = []
 
-cron.schedule('**0***', () => {
-  cities.forEach(async city => {
+cron.schedule('0 0 0 * * *', async () => {
+  await cities.forEach(async city => {
     const result = {}
     const response = await downloadData(city)
     result.name = response.data.city.name
@@ -31,7 +30,9 @@ cron.schedule('**0***', () => {
     response.data.list.forEach((data) => {
       result.data.push({ time: data.dt, dateString: data.dt_txt, temp: data.main.temp })
     })
-    combined.push(result)
-    console.log(combined)
+    console.log(result)
+    db.data.insert(result)
   })
 })
+
+app.listen(process.env.APP_PORT, () => console.log('listening to: ', process.env.APP_PORT))
