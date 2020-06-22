@@ -1,12 +1,12 @@
-const db = require('../database')
+const db = require('../database/database')
 const util = require('util')
 const logger = require('../config/winston')
-const { successMsg, errorMsg } = require('../helper/constants')
+const { successMsg, errorMsg, setResponseObj } = require('../helper/constants')
 
 // promisify mongodb find query
 const find = util.promisify(db.weatherData.find).bind(db.weatherData)
 
-// Handler to check temperature out of range
+// controller to check temperature out of range
 const checkTempRange = async (req, res) => {
   const location = req.params.location
   const low = Number(req.params.low)
@@ -18,28 +18,14 @@ const checkTempRange = async (req, res) => {
       timeStamp,
       $or: [{ temp: { $lt: Number(low) } }, { temp: { $gt: Number(high) } }]
     })
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: result,
-        message: successMsg,
-        error: null
-      })
+    res.status(200).json(setResponseObj(true, result, successMsg, null))
   } catch (error) {
     logger.error(req.originalUrl + ' ' + error)
-    res
-      .status(500)
-      .json({
-        success: false,
-        data: null,
-        message: errorMsg,
-        error: errorMsg
-      })
+    res.status(500).json(setResponseObj(false, null, errorMsg, errorMsg))
   }
 }
 
-// Handler to get locations outside temperature range
+// controller to get locations outside temperature range
 const getLocation = async (req, res) => {
   const low = Number(req.params.low)
   const high = Number(req.params.high)
@@ -50,27 +36,14 @@ const getLocation = async (req, res) => {
       timeInHour,
       $or: [{ temp: { $lt: low } }, { temp: { $gt: high } }]
     })
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: result,
-        message: successMsg,
-        error: null
-      })
+    res.status(200).json(setResponseObj(true, result, successMsg, null))
   } catch (error) {
     logger.error(req.originalUrl + ' ' + error)
-    res
-      .status(500)
-      .json({
-        success: false,
-        data: null,
-        message: errorMsg,
-        error: errorMsg
-      })
+    res.status(500).json(setResponseObj(false, null, errorMsg, errorMsg))
   }
 }
 
+// controller to get all times outside given temperature range
 const getTime = async (req, res) => {
   const low = Number(req.params.low)
   const high = Number(req.params.high)
@@ -80,24 +53,11 @@ const getTime = async (req, res) => {
       name: location,
       $or: [{ temp: { $lt: low } }, { temp: { $gt: high } }]
     })
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: result,
-        message: successMsg,
-        error: null
-      })
+    res.status(200).json(setResponseObj(true, result, successMsg, null))
   } catch (error) {
     logger.error(req.originalUrl + ' ' + error)
-    res
-      .status(500)
-      .json({
-        success: false,
-        data: null,
-        message: errorMsg,
-        error: errorMsg
-      })
+    res.status(500).json(setResponseObj(false, null, errorMsg, errorMsg))
   }
 }
+
 module.exports = { checkTempRange, getLocation, getTime }
