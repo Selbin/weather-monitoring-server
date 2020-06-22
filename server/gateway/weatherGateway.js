@@ -1,6 +1,6 @@
 const axios = require('axios')
 const cron = require('node-cron')
-const db = require('../database')
+const db = require('../database/database')
 const dotEnv = require('dotenv')
 const logger = require('../config/winston')
 const { apiUrl } = require('../helper/constants')
