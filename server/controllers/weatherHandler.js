@@ -11,11 +11,11 @@ const checkTempRange = async (req, res) => {
   const location = req.params.location
   const low = Number(req.params.low)
   const high = Number(req.params.high)
-  const timeStamp = Number(req.params.timeStamp)
+  const dateStr = req.params.dateStr
   try {
     const result = await find({
       name: location,
-      timeStamp,
+      dateString: dateStr,
       $or: [{ temp: { $lt: Number(low) } }, { temp: { $gt: Number(high) } }]
     })
     res.status(200).json(setResponseObj(true, result, successMsg, null))
