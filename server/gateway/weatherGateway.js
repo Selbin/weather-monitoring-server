@@ -23,6 +23,7 @@ const getWeatherData = async city => {
 }
 
 module.exports = () => {
+  // cron job scheduled to fetch data from weather api at 12 am
   cron.schedule('0 0 0 * * *', () => {
     const cities = JSON.parse(process.env.CITY)
     cities.forEach(async (city, i) => {
