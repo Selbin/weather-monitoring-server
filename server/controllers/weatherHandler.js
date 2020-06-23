@@ -71,7 +71,7 @@ const getDateRange = (req, res) => {
         .sort({ timeStamp: -1 })
         .limit(1, (err, endDate) => {
           if (err)res.status(500).json(setResponseObj(false, null, errorMsg, errorMsg))
-          res.status(200).json(setResponseObj(true, { startDate: startDate[0].dateString, endDate: endDate[0].dateString }, successMsg, null))
+          res.status(200).json(setResponseObj(true, { startDate: startDate[0].dateString.slice(0, 10), endDate: endDate[0].dateString.slice(0, 10) }, successMsg, null))
         })
     })
 }
