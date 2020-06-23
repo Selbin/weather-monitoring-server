@@ -60,6 +60,7 @@ const getTime = async (req, res) => {
   }
 }
 
+// controller to get start and end date
 const getDateRange = (req, res) => {
   db.weatherData
     .find({}, { dateString: 1 })
