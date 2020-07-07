@@ -66,12 +66,12 @@ const getDateRange = (req, res) => {
     .find({}, { dateString: 1 })
     .sort({ timeStamp: 1 })
     .limit(1, (err, startDate) => {
-      if (err) res.status(500).json(setResponseObj(false, null, errorMsg, errorMsg))
+      if (err) return res.status(500).json(setResponseObj(false, null, errorMsg, errorMsg))
       db.weatherData
         .find({}, { dateString: 1 })
         .sort({ timeStamp: -1 })
         .limit(1, (err, endDate) => {
-          if (err)res.status(500).json(setResponseObj(false, null, errorMsg, errorMsg))
+          if (err) return res.status(500).json(setResponseObj(false, null, errorMsg, errorMsg))
           res.status(200).json(setResponseObj(true, { startDate: startDate[0].dateString.slice(0, 10), endDate: endDate[0].dateString.slice(0, 10) }, successMsg, null))
         })
     })
