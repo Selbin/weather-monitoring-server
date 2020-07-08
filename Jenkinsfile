@@ -1,12 +1,7 @@
 pipeline {
-  agent {
-    dockerfile {
-      filename 'docker-compose'
-    }
-
-  }
+  agent any
   stages {
-    stage('') {
+    stage('error') {
       steps {
         echo 'test'
       }
