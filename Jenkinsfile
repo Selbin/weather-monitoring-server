@@ -1,7 +1,7 @@
 pipeline {
   agent any
   stages {
-    stage('jenkins test') {
+    stage('jenkins test run') {
       steps {
         echo 'test'
       }
